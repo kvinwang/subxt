@@ -230,6 +230,8 @@ impl SignedExtension for ChargeTransactionPayment {
 pub trait SignedExtra<T: Config>: SignedExtension {
     /// The type the extras.
     type Extra: SignedExtension + Send + Sync;
+    /// The extra config parameters.
+    type Config: Default + Send + Sync;
 
     /// Creates a new `SignedExtra`.
     fn new(
@@ -237,6 +239,7 @@ pub trait SignedExtra<T: Config>: SignedExtension {
         tx_version: u32,
         nonce: T::Index,
         genesis_hash: T::Hash,
+        config: Self::Config,
     ) -> Self;
 
     /// Returns the transaction extra.
@@ -263,12 +266,14 @@ impl<T: Config + Clone + Debug + Eq + Send + Sync> SignedExtra<T> for DefaultExt
         CheckWeight<T>,
         ChargeTransactionPayment,
     );
+    type Config = ();
 
     fn new(
         spec_version: u32,
         tx_version: u32,
         nonce: T::Index,
         genesis_hash: T::Hash,
+        _config: Self::Config,
     ) -> Self {
         DefaultExtra {
             spec_version,
